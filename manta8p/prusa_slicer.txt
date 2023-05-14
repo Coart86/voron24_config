@@ -1,0 +1,28 @@
+; M190 S0
+; M109 S0 ; uncomment to remove set&wait temp gcode added automatically after this start gcode
+print_start EXTRUDER=[first_layer_temperature[initial_tool]] BED=[first_layer_bed_temperature]
+STATUS_HEATING
+M104 S150                                    ; start heating the extruder a bit to save some time but prevent oozing
+M140 S[first_layer_bed_temperature]          ; heatbed temperature
+M190 S[first_layer_bed_temperature]          ; wait for the bed to heat up
+;G28                                          ; home all axes
+
+G32
+
+;BED_MESH_PROFILE LOAD=[first_layer_bed_temperature]
+STATUS_MESHING
+BED_MESH_CALIBRATE
+
+G90
+G1 X60 Y-0.5 F5000                           ; move 
+STATUS_HEATING
+M109 S[first_layer_temperature]              ; Heat up extruder
+M83                                          ; extruder relative mode
+G92 E0                                       ; reset extruder
+G1 E17.0 F200 ; extract some
+G1 E-1 F1800 ;cut extruded filament
+;G4 S3
+CLEAN_NOZZLE
+STATUS_BUSY
+
+;VORON_PURGE
